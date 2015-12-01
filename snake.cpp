@@ -21,7 +21,7 @@ snake mySnake;
 
 void delay(void);
 void clear(void);
-void debug(void);
+void debug(int c);
 void iniciaJogo(void);
 void desenhaTela(void);
 void lerTecla(void);
@@ -33,8 +33,7 @@ int main(void){
 	tecla = ' ';
 	while(tecla != 'x'){
 		desenhaTela();
-		c++;
-		debug();
+		debug(c++);
 		delay();
 		lerTecla();	
 		moveSnake();					
@@ -51,7 +50,7 @@ void clear(void){
 	system("cls");	
 }
 
-void debug(void){
+void debug(int c){
 	printf("%d",c);					
 }
 
