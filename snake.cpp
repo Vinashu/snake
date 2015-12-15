@@ -5,7 +5,9 @@
 #define C 40		//Colunas na tela
 #define L 20		//Linhas na tela
 #define D 200000000	//Delay
-
+#define Snake '@'	//Cobra
+#define Branco 'X'	//
+#define Margem '#'
 //Definindo a estrutura da fila
 struct no {
 	int x;
@@ -26,6 +28,7 @@ struct snake{
 	int posX;
 	int posY;
 	int size;
+	int moved;
 	int speed;
 };
 snake mySnake;
@@ -69,6 +72,7 @@ void clear(void){
 }
 
 void debug(int c){
+	filaMostrar(fila);
 	printf("%d",c);					
 }
 
@@ -79,22 +83,24 @@ void iniciaJogo(void){
 		}
 	}	
 	for (i=0;i<C;i++){
-		tela[0][i] = '#';
-		tela[L-1][i] = '#';		
+		tela[0][i] = Margem;
+		tela[L-1][i] = Margem;		
 	}
 	for (i=0;i<L;i++){
-		tela[i][0] = '#';
-		tela[i][C-1]= '#';
+		tela[i][0] = Margem;
+		tela[i][C-1]= Margem;
 	}	
-	tela[L/2][C/2]='@';
+	tela[L/2][C/2]= Snake;
 	mySnake.posX = L/2;
 	mySnake.posY = C/2;
 	mySnake.speed = 0;
+	mySnake.moved = 0;
   	//Criando o primeiro nó da fila
   	fila = (ptrNo) malloc(sizeof(no));
-  	fila->x = mySnake.posX;
-  	fila->y = mySnake.posY;
+  	fila->x = 0;
+  	fila->y = 0;
   	fila->proximo = NULL;	
+  	filaInserir(fila,mySnake.posX,mySnake.posY);
 }
 
 void desenhaTela(void){
@@ -105,27 +111,24 @@ void desenhaTela(void){
 		printf("\n");		
 	}			
 	printf("Use os comandos awsd para movimentar a cobra, x para sair!\n");
-	filaMostrar(fila);
 }
 
 void lerTecla(void){
-    if(kbhit()){
+    if(kbhit() && mySnake.moved==0){
         tecla = getch();
+        mySnake.moved = 1;
         switch (tecla){
  			case 'd':
  				mySnake.speed = 1;
 			break;       	
  			case 'a':
  				mySnake.speed = 2; 				
- 				mySnake.posY--;
 			break;       	
  			case 'w':
  				mySnake.speed = 3; 				
- 				mySnake.posX--;
 			break;       				
  			case 's':
  				mySnake.speed = 4; 				
- 				mySnake.posX++;
 			break;       							
         }
     }
@@ -147,7 +150,8 @@ void moveSnake(void){
 		break;       							  	
 	}
 	if (mySnake.speed !=0){
-		tela[mySnake.posX][mySnake.posY]='@';        	
+		mySnake.moved = 0;
+		tela[mySnake.posX][mySnake.posY]= Snake;        	
 		filaInserir(fila,mySnake.posX,mySnake.posY);		
 		filaRemover(fila);		
 	}
@@ -170,10 +174,10 @@ void filaRemover(ptrNo fila){
   ptrNo atual;	
   atual = (ptrNo) malloc(sizeof(no));  
   atual = fila;
-  tela[atual->x][atual->y]='X';      
   if (fila->proximo != NULL){
     fila = fila->proximo;
     atual->proximo = fila->proximo;
+  	tela[fila->x][fila->y]= Branco; 
   }
 }
 
